@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  mytopmusic.api:
+    image: ${DOCKER_REGISTRY-}mytopmusic.api
+    container_name: mytopmusic.api
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:MyTopMusicDB:HostName=mytopmusic.db"
+      - "ConnectionStrings:MyTopMusicDB:Catalogue=mytopmusic"
+      - "ConnectionStrings:MyTopMusicDB:User=sa"
+      - "ConnectionStrings:MyTopMusicDB:Password=.123Pass456."
+    ports:
+      - "9010:80"
+    depends_on:
+      - mytopmusic.db
+
+  mytopmusic.db:
+    image: mcr.microsoft.com/mssql/server
+    container_name: mytopmusic.db
+    restart: always
+    volumes:
+      - /c/data/docker/mytopmusic:/var/opt/mssql/data
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: ".123Pass456."
+      ACCEPT_EULA: "Y"
